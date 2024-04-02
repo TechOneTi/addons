@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="view_kanban_model_kanban_view" model="ir.ui.view">
+    <field name="name">kanban.model.kanban_view</field>
+    <field name="model">pos.order</field>
+    <field name="arch" type="xml">
+        <kanban class="o_kanban_mobile" kanban-drop="1">
+            <field name="status_delivery" widget="statusbar" statusbar_visible="online,away,offline"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                        <div class="oe_kanban_card_content">
+                            <div class="oe_kanban_card_header">
+                                <div class="oe_kanban_card_title">
+                                    <field name="tracking_number"/>
+                                </div>
+                                <field name="address"/>
+                            </div>
+                            <div class="oe_kanban_card_columns">
+                                <t t-if="record.status_delivery === 'online'">
+                                    <div class="oe_kanban_card_column oe_kanban_card_column_online o_kanban_droppable">
+                                        <field name="status_delivery"/>
+                                    </div>
+                                </t>
+                                <t t-if="record.status_delivery === 'away'">
+                                    <div class="oe_kanban_card_column oe_kanban_card_column_away o_kanban_droppable">
+                                        <field name="status_delivery"/>
+                                    </div>
+                                </t>
+                                <t t-if="record.status_delivery === 'offline'">
+                                    <div class="oe_kanban_card_column oe_kanban_card_column_offline o_kanban_droppable">
+                                        <field name="status_delivery"/>
+                                    </div>
+                                </t>
+                                <!-- Add more conditions for additional status values -->
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+
+<record id="action_cozinha_pedidos" model="ir.actions.act_window">
+    <field name="name">Kanban Model</field>
+    <field name="res_model">pos.order</field>
+    <field name="view_mode">kanban</field>
+    <field name="view_id" ref="view_kanban_model_kanban_view"/>
+    <field name="context">{}</field>
+</record>
+
+
+
+
+
+    <data>
+        <menuitem id="cozinha_pedido_status" name="Pedidos Cozinha" parent="point_of_sale.menu_point_root" sequence="10" action="action_cozinha_pedidos"/>
+    </data>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <act_window_report id="action_report_pos_order"
+            model="pos.order"
+            report_type="qweb-pdf"
+            name="Print Order"
+            file="pos_order.report_pos_order"
+            print_report="True"
+            print_report_name="'Print Order'"
+        />
+    </data>
+</odoo>
