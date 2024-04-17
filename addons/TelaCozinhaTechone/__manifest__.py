@@ -9,7 +9,7 @@
     ],
     'data': [
         "views/view.xml",
-        "static/src/js/pedidoatt.js"
+        #"static/src/js/pedidoatt.js"
         # "views/cozinha.xml",
         # "report/report_pedido_cozinha.xml",
         # "data/report_action.xml",

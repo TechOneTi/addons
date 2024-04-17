@@ -1,7 +1,5 @@
 /** @odoo-module */
 
-import { simulateBarCode } from "@barcodes/../tests/helpers"
-
 export function inLeftSide(steps) {
     return [
         {
@@ -20,23 +18,4 @@ export function inLeftSide(steps) {
 
 export function negate(selector) {
     return `body:not(:has(${selector}))`;
-}
-
-export function negateStep(step) {
-    return {
-        ...step,
-        trigger: negate(step.trigger),
-    };
-}
-
-export function scan_barcode(barcode) {
-    return [
-        {
-            content: `PoS model scan barcode '${barcode}'`,
-            trigger: "body", // The element here does not really matter as long as it is present
-            run: () => {
-                simulateBarCode([...barcode, "Enter"])
-            },
-        },
-    ];
 }

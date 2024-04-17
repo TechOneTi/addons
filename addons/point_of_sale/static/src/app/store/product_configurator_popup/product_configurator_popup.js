@@ -38,11 +38,6 @@ export class BaseProductAttribute extends Component {
             extra,
         };
     }
-
-    getFormatPriceExtra(val) {
-        const sign = val < 0 ? "- " : "+ ";
-        return sign + this.env.utils.formatCurrency(Math.abs(val));
-    }
 }
 
 export class RadioProductAttribute extends BaseProductAttribute {
@@ -62,10 +57,6 @@ export class RadioProductAttribute extends BaseProductAttribute {
     }
 }
 
-export class PillsProductAttribute extends BaseProductAttribute {
-    static template = "point_of_sale.PillsProductAttribute";
-}
-
 export class SelectProductAttribute extends BaseProductAttribute {
     static template = "point_of_sale.SelectProductAttribute";
 }
@@ -80,7 +71,7 @@ export class MultiProductAttribute extends BaseProductAttribute {
     setup() {
         super.setup();
         this.state = useState({
-            attribute_value_ids: {},
+            attribute_value_ids: [],
             custom_value: "",
         });
 
@@ -100,7 +91,6 @@ export class ProductConfiguratorPopup extends AbstractAwaitablePopup {
     static template = "point_of_sale.ProductConfiguratorPopup";
     static components = {
         RadioProductAttribute,
-        PillsProductAttribute,
         SelectProductAttribute,
         ColorProductAttribute,
         MultiProductAttribute,

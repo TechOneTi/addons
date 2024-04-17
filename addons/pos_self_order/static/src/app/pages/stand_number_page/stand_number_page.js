@@ -15,22 +15,63 @@ export class StandNumberPage extends Component {
             standNumber: "25",
             address:"",
             obs:"",
+            complemento:"",
+            rua: "",
+            bairro: "",
+            numero: "",
+            telefone: "",
+            name: "",
+            isAddressComplete: 0,
         });
+
+        
+        this.loadCookie();
     }
-    handleAddressChange(event){
-        this.state.address += event.target.value;
+
+    handleTelefoneChange(event){
+        this.state.telefone = event.target.value;
+        this.updateAddress(); 
+        this.updateCookie();
     }
-    handleRuaChange(event){
-        this.state.address += ', Rua:'+event.target.value;
+    
+    handleNomeChange(event){
+        this.state.name = event.target.value;
+        this.updateAddress(); 
+        this.updateCookie();
     }
-    handleNumeroChange(event){
-        this.state.address += ', N° '+event.target.value;
+
+    handleRuaChange(event) {
+        this.state.rua = event.target.value;
+        this.updateAddress(); 
+        this.updateCookie();
     }
-    handleBairroChange(event){
-        this.state.address += ' Bairro: '+event.target.value;
+    
+    handleNumeroChange(event) {
+        this.state.numero = event.target.value;
+        this.updateAddress(); 
+        this.updateCookie();
     }
+    
+    handleBairroChange(event) {
+        this.state.bairro = event.target.value;
+        this.updateAddress(); 
+        this.updateCookie();
+    }
+
+    updateAddress() {
+        if (this.state.telefone && this.state.name && this.state.rua && this.state.numero && this.state.bairro) {
+            this.state.address = 'Nome: ' + this.state.name + ', Telefone: ' + this.state.telefone +  ', Rua: ' + this.state.rua + ', N°: ' + this.state.numero + ', Bairro: ' + this.state.bairro;
+            this.state.isAddressComplete = 1;
+        } else {
+            this.state.address = "";
+            this.state.isAddressComplete = 0;
+        }
+
+    }
+    
     handleComplementoChange(event){
         this.state.address += ' (Obs: '+event.target.value+')';
+        this.updateCookie(); 
     }
 
     handleCheckboxChange(event) {
@@ -44,20 +85,21 @@ export class StandNumberPage extends Component {
             this.state.obs = "";
             this.state.obs += 'Dinheiro, Troco: (' + campo.value + ') '+obs.value;
             console.log("DEBITO");
-            
-        }
-        else if (event.target.value == 'Credit') {   
+        } else if (event.target.value == 'Credit') {   
             this.state.obs = "";
             this.state.obs += 'Cartão de credito, Observação do pedido: '+obs.value;
             console.log("CREDITO");
         }
     }
+    
     handleTrocoChange(event){
         this.state.obs += ' Troco: ('+event.target.value+')';
     }
+    
     handleObsChange(event){
         this.state.obs += 'Observação do pedido: '+event.target.value;
     }
+
     confirm() {
         if (this.state.standNumber.length > 0) {
             this.selfOrder.currentOrder.table_stand_number = this.state.standNumber;
@@ -65,5 +107,52 @@ export class StandNumberPage extends Component {
             this.selfOrder.currentOrder.obs= this.state.obs;
             this.selfOrder.confirmOrder();
         }
+    }
+
+    
+    loadCookie() {
+        const name = localStorage.getItem("costumerName");
+        if (name) {
+            this.state.name = name;
+        }
+        const rua = localStorage.getItem("costumerStreet");
+        if (rua) {
+            this.state.rua = rua;
+        }
+        const bairro = localStorage.getItem("costumerDistrict");
+        if (bairro) {
+            this.state.bairro = bairro;
+        }
+        const telefone = localStorage.getItem("costumerTelephone");
+        if (telefone) {
+            this.state.telefone = telefone;
+        }
+        
+            
+
+        const numero = localStorage.getItem("costumerNumber");
+        if (numero) {
+            this.state.numero = numero;
+        }
+        
+        if (this.state.telefone && this.state.name && this.state.rua && this.state.numero && this.state.bairro) {
+            this.state.address = 'Nome: ' + this.state.name + ', Telefone: ' + this.state.telefone +  ', Rua: ' + this.state.rua + ', N°: ' + this.state.numero + ', Bairro: ' + this.state.bairro;
+            this.state.isAddressComplete = 1;
+        } else {
+            this.state.address = "";
+            this.state.isAddressComplete = 0;
+        }
+
+    }
+
+    
+    updateCookie() {
+        
+        localStorage.setItem("costumerNumber", this.state.numero);
+        localStorage.setItem("costumerName", this.state.name);
+        localStorage.setItem("costumerStreet", this.state.rua);
+        localStorage.setItem("costumerDistrict", this.state.bairro);
+        localStorage.setItem("costumerTelephone", this.state.telefone);
+        
     }
 }

@@ -20,8 +20,7 @@ class PosMakePayment(models.TransientModel):
         active_id = self.env.context.get('active_id')
         if active_id:
             order = self.env['pos.order'].browse(active_id)
-            amount = -order.refunded_order_ids.amount_paid if order.refunded_order_ids else order.amount_total
-            return amount - order.amount_paid
+            return order.amount_total - order.amount_paid
         return False
 
     def _default_payment_method(self):
@@ -54,11 +53,10 @@ class PosMakePayment(models.TransientModel):
         currency = order.currency_id
 
         init_data = self.read()[0]
-        payment_method = self.env['pos.payment.method'].browse(init_data['payment_method_id'][0])
         if not float_is_zero(init_data['amount'], precision_rounding=currency.rounding):
             order.add_payment({
                 'pos_order_id': order.id,
-                'amount': order._get_rounded_amount(init_data['amount'], payment_method.is_cash_count or not self.config_id.only_round_cash_method),
+                'amount': order._get_rounded_amount(init_data['amount']),
                 'name': init_data['payment_name'],
                 'payment_method_id': init_data['payment_method_id'][0],
             })

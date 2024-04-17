@@ -6,8 +6,7 @@ import * as Chrome from "@point_of_sale/../tests/tours/helpers/ChromeTourMethods
 import * as ReceiptScreen from "@point_of_sale/../tests/tours/helpers/ReceiptScreenTourMethods";
 import { registry } from "@web/core/registry";
 import * as Order from "@point_of_sale/../tests/tours/helpers/generic_components/OrderWidgetMethods";
-import { inLeftSide, scan_barcode } from "@point_of_sale/../tests/tours/helpers/utils";
-import * as ProductConfiguratorPopup from "@point_of_sale/../tests/tours/helpers/ProductConfiguratorTourMethods";
+import { inLeftSide } from "./helpers/utils";
 
 registry.category("web_tour.tours").add("ProductScreenTour", {
     test: true,
@@ -192,28 +191,14 @@ registry.category("web_tour.tours").add("limitedProductPricelistLoading", {
         [
             ProductScreen.confirmOpeningPopup(),
 
-            scan_barcode("0100100"),
+            ProductScreen.scan_barcode("0100100"),
             ProductScreen.selectedOrderlineHas('Test Product 1', '1.0', '80.0'),
 
-            scan_barcode("0100200"),
+            ProductScreen.scan_barcode("0100200"),
             ProductScreen.selectedOrderlineHas('Test Product 2', '1.0', '100.0'),
 
-            scan_barcode("0100300"),
+            ProductScreen.scan_barcode("0100300"),
             ProductScreen.selectedOrderlineHas('Test Product 3', '1.0', '50.0'),
-            Chrome.endTour(),
-        ].flat(),
-});
-
-registry.category("web_tour.tours").add("MultiProductOptionsTour", {
-    test: true,
-    steps: () =>
-        [
-            ProductScreen.confirmOpeningPopup(),
-
-            ProductScreen.clickDisplayedProduct("Product A"),
-            ProductConfiguratorPopup.isOptionShown("Value 1"),
-            ProductConfiguratorPopup.isOptionShown("Value 2"),
-
             Chrome.endTour(),
         ].flat(),
 });

@@ -9,14 +9,13 @@
                     categories="getCategories()"
                     onClick="(id) => this.pos.setSelectedCategoryId(id)"
                     showImage="showCategoryImages"
-                    class="ui.isSmall ? 'scrollbar-hidden' : ''"
                 />
                 <Input tModel="[pos, 'searchProductWord']"
                     class="'p-2'"
                     isSmall="ui.isSmall"
                     placeholder="'Search products...'"
                     icon="{type: 'fa', value: 'fa-search'}"
-                    debounceMillis="500" />
+                    debounceMillis="100" />
             </div>
             <div class="product-list-container flex-grow-1 overflow-y-auto">
                 <div t-if="productsToDisplay.length != 0 and pos.posHasValidProduct()" t-attf-class="product-list {{this.pos.productListViewMode}} p-1">
@@ -26,7 +25,7 @@
                             name="product.display_name"
                             productId="product.id"
                             price="product.getFormattedUnitPrice()"
-                            imageUrl="pos.show_product_images and product.getImageUrl()"
+                            imageUrl="product.getImageUrl()"
                             onClick="() =>this.pos.addProductToCurrentOrder(product)"
                             productInfo="true"
                             onProductInfoClick="() => this.onProductInfoClick(product)"

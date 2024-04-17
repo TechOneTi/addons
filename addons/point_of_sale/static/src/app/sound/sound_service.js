@@ -6,8 +6,7 @@ import { registry } from "@web/core/registry";
 registry
     .category("sounds")
     .add("error", "/point_of_sale/static/src/sounds/error.wav")
-    .add("bell", "/point_of_sale/static/src/sounds/bell.wav")
-    .add("notification", "/point_of_sale/static/src/sounds/notification.wav");
+    .add("bell", "/point_of_sale/static/src/sounds/bell.wav");
 
 class SoundContainer extends Component {
     static template = xml`<t t-foreach="props.sounds" t-as="sound" t-key="sound">

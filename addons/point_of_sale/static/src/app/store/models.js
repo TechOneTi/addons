@@ -1177,6 +1177,7 @@ export class Payment extends PosModel {
         this.pos = options.pos;
         this.order = options.order;
         this.amount = 0;
+        this.objconteudo = obj;
         this.selected = false;
         this.cashier_receipt = "";
         this.ticket = "";
@@ -1289,6 +1290,7 @@ export class Payment extends PosModel {
     }
     //exports as JSON for receipt printing
     export_for_printing() {
+        console.log("Export_for_printing",this);
         return {
             amount: this.get_amount(),
             name: this.name,

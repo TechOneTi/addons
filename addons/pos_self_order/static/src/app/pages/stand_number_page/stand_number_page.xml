@@ -2,57 +2,50 @@
 <templates id="template" xml:space="preserve">
     <t t-name="pos_self_order.StandNumberPage">
         <div class="self_order_stand_number d-flex flex-column flex-grow-1 justify-content-between px-3 overflow-y-auto">
-
             <div class=" form" >
                 <h1>Endereço de entrega</h1>
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="deliveryAddress" class="form-label">Nome:</label>
-                    <input type="text" id="deliveryAddress" class="form-control" t-on-change="handleAddressChange"/>
+                    <input type="text" id="deliveryAddress" class="form-control" t-on-change="handleNomeChange" t-att-value="state.name" />
+                </div> 
+                <div class="order-price d-flex-column flex-grow-0">
+                    <label for="telefone" class="form-label">Telefone:</label>
+                    <input type="number" id="telefone" class="form-control" t-on-change="handleTelefoneChange" t-att-value="state.telefone" />
                 </div>
-  
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="Rua" class="form-label">Rua:</label>
-                    <input type="text" id="Rua" class="form-control" t-on-change="handleRuaChange"/>
+                    <input type="text" id="Rua" class="form-control" t-on-change="handleRuaChange" t-att-value="state.rua" />
                 </div>
-                
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="Numero" class="form-label">Numero:</label>
-                    <input type="text" id="Numero" class="form-control" t-on-change="handleNumeroChange"/>
+                    <input type="number" id="numero" class="form-control" t-on-change="handleNumeroChange" t-att-value="state.numero" />
                 </div>
-
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="Bairro" class="form-label">Bairro:</label>
-                    <input type="text" id="Bairro" class="form-control" t-on-change="handleBairroChange"/>
+                    <input type="text" id="Bairro" class="form-control" t-on-change="handleBairroChange" t-att-value="state.bairro"/>
                 </div>
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="Complemento" class="form-label">Complemento:</label>
-                    <input type="text" id="Complemento" class="form-control" t-on-change="handleComplementoChange"/>
+                    <input type="text" id="Complemento" class="form-control" t-on-change="handleComplementoChange" t-att-value="state.complemento" />
                 </div>
-                
                 <div class="order-price d-flex-column flex-grow-0">
-                <h1>Forma de pagamento</h1>
-                    <select id="payment_select" name="payment_select" t-on-change="handleCheckboxChange">
+                    <h1>Forma de pagamento</h1>
+                    <select id="payment_select" name="payment_select" t-on-change="handleCheckboxChange" >
                         <option value="money">Dinheiro</option>
                         <option value="Credit">Credito</option>
                         <option value="debit">Debito</option>
                     </select>
-                    <input type="text" id="troco" class="form-control" placeholder="Troco" t-on-change="handleTrocoChange"/>
-                    
-                    
+                    <input type="text" id="troco" class="form-control" placeholder="Troco" t-on-change="handleTrocoChange" />
                 </div>
                 <div class="order-price d-flex-column flex-grow-0">
                     <label for="obs" class="form-label">Observação:</label>
-                    <input type="text" id="obs" class="form-control" t-on-change="handleObsChange"/>
+                    <input type="text" id="obs" class="form-control" t-on-change="handleObsChange" />
                 </div>
-
-
-                
             </div>
-            
         </div>
         <div class="d-flex justify-content-between p-3 bg-view border-top">
             <button class="btn btn-secondary btn-lg" t-on-click="() => this.router.back()"><i class="oi oi-chevron-left me-2" aria-hidden="true"/>Back</button>
-            <button class="btn btn-primary btn-lg" t-att-class="{'disabled': !state.address}" t-on-click="confirm">Enviar</button>
+            <button class="btn btn-primary btn-lg" t-att-disabled="state.isAddressComplete === 0 ? 'disabled' : ''" t-on-click="confirm">Enviar</button>
         </div>
     </t>
 </templates>

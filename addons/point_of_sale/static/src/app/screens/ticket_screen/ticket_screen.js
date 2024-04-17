@@ -6,7 +6,7 @@ import { useService } from "@web/core/utils/hooks";
 import { deserializeDateTime, formatDateTime } from "@web/core/l10n/dates";
 import { parseFloat } from "@web/views/fields/parsers";
 import { _t } from "@web/core/l10n/translation";
-import { PosDB } from "@point_of_sale/app/store/db";
+
 import { ErrorPopup } from "@point_of_sale/app/errors/popups/error_popup";
 import { ConfirmPopup } from "@point_of_sale/app/utils/confirm_popup/confirm_popup";
 
@@ -50,7 +50,6 @@ export class TicketScreen extends Component {
 
     setup() {
         this.pos = usePos();
-        this.db = new PosDB();
         this.ui = useState(useService("ui"));
         this.popup = useService("popup");
         this.orm = useService("orm");
@@ -58,31 +57,15 @@ export class TicketScreen extends Component {
         this.numberBuffer.use({
             triggerAtInput: (event) => this._onUpdateSelectedOrderline(event),
         });
-
-
-        setInterval(async () => {
-            try {
-                const newOrderListStorage = window.localStorage.getItem('new_order_list');
-                const newOrderList = JSON.parse(newOrderListStorage) || [];
-
-                const newOrder = await this.pos._syncAllOrdersFromServer();
-                if (newOrder) {
-                    newOrderList.push(newOrder);
-                    window.localStorage.setItem('new_order_list', JSON.stringify(newOrderList));
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }, 10000);
         this._state = this.pos.TICKET_SCREEN_STATE;
         const defaultUIState = this.props.reuseSavedUIState
             ? this._state.ui
             : {
-                selectedOrder: this.pos.get_order(),
-                searchDetails: this.pos.getDefaultSearchDetails(),
-                filter: null,
-                selectedOrderlineIds: {},
-            };
+                  selectedOrder: this.pos.get_order(),
+                  searchDetails: this.pos.getDefaultSearchDetails(),
+                  filter: null,
+                  selectedOrderlineIds: {},
+              };
         Object.assign(this._state.ui, defaultUIState, this.props.ui || {});
 
         onMounted(this.onMounted);
@@ -105,19 +88,6 @@ export class TicketScreen extends Component {
             await this._fetchSyncedOrders();
         }
     }
-    
-    getTrackingNumber(order) {
-        if (order.name) {
-            const reference = order.name;
-            const arrRef = reference.split(" ")[1].split("-");
-            const sessionID = arrRef[0][4];
-            const sequence = arrRef[2].substr(2, 2);
-            const trackingNumber = sessionID + sequence;
-            return trackingNumber;
-        }
-        return null;
-    }
-
     getNumpadButtons() {
         return [
             { value: "1" },
@@ -146,9 +116,6 @@ export class TicketScreen extends Component {
         }
     }
     onClickOrder(clickedOrder) {
-        const newOrderListStorage = window.localStorage.getItem('new_order_list');
-        const filteredNewOrderList = JSON.parse(newOrderListStorage).filter(newOrder => newOrder.name !== clickedOrder.name);
-        window.localStorage.setItem('new_order_list', JSON.stringify(filteredNewOrderList));
         this._state.ui.selectedOrder = clickedOrder;
         this.numberBuffer.reset();
         if ((!clickedOrder || clickedOrder.locked) && !this.getSelectedOrderlineId()) {
@@ -182,10 +149,8 @@ export class TicketScreen extends Component {
                     this.getTotal(order)
                 ),
             });
-            if (confirmed) {
-                this.db.set_order_to_remove_from_server(order)
-            } else {
-                return confirmed;
+            if (!confirmed) {
+                return;
             }
         }
         if (order && (await this._onBeforeDeleteOrder(order))) {
@@ -207,7 +172,6 @@ export class TicketScreen extends Component {
         if (this.pos.isOpenOrderShareable()) {
             this.pos._removeOrdersFromServer();
         }
-        return true;
     }
     async onNextPage() {
         if (this._state.syncedOrders.currentPage < this._getLastPage()) {
@@ -309,27 +273,13 @@ export class TicketScreen extends Component {
             return;
         }
 
-        const invoicedOrderIds = new Set(
-            allToRefundDetails
-                .filter(detail => this._state.syncedOrders.cache[detail.orderline.orderBackendId].state === "invoiced")
-                .map(detail => detail.orderline.orderBackendId)
-        );
-
-        if (invoicedOrderIds.size > 1) {
-            this.popup.add(ErrorPopup, {
-                title: _t('Multiple Invoiced Orders Selected'),
-                body: _t('You have selected orderlines from multiple invoiced orders. To proceed refund, please select orderlines from the same invoiced order.')
-            });
-            return;
-        }
-
         // The order that will contain the refund orderlines.
         // Use the destinationOrder from props if the order to refund has the same
         // partner as the destinationOrder.
         const destinationOrder =
             this.props.destinationOrder &&
-                partner === this.props.destinationOrder.get_partner() &&
-                !this.pos.doNotAllowRefundAndSales()
+            partner === this.props.destinationOrder.get_partner() &&
+            !this.pos.doNotAllowRefundAndSales()
                 ? this.props.destinationOrder
                 : this._getEmptyOrder(partner);
 
@@ -421,14 +371,7 @@ export class TicketScreen extends Component {
         const predicate = (order) => {
             return filterCheck(order) && searchCheck(order);
         };
-        let allOrders = this._getOrderList().filter(predicate);
-        const newOrderListStorage = JSON.parse(window.localStorage.getItem('new_order_list'));
-
-        allOrders.forEach(order => {
-            const foundOrder = newOrderListStorage.find(newOrder => newOrder.name === order.name);
-            order.check = foundOrder ? false : true;
-        });
-        return allOrders;
+        return this._getOrderList().filter(predicate);
     }
     getDate(order) {
         return formatDateTime(order.date_order);
@@ -447,7 +390,7 @@ export class TicketScreen extends Component {
     }
     getStatus(order) {
         if (order.locked) {
-            return order.state === 'invoiced' ? _t('Invoiced') : _t("Paid");
+            return _t("Paid");
         } else {
             const screen = order.get_screen_data();
             return this._getOrderStates().get(this._getScreenToStatusMap()[screen.name]).text;
@@ -486,7 +429,7 @@ export class TicketScreen extends Component {
 
         return selectedOrder
             ? (order.backendId && order.backendId == selectedOrder.backendId) ||
-            order.uid === selectedOrder.uid
+                  order.uid === selectedOrder.uid
             : false;
     }
     showCardholderName() {
@@ -619,8 +562,8 @@ export class TicketScreen extends Component {
                 discount: orderline.discount,
                 pack_lot_lines: orderline.pack_lot_lines
                     ? orderline.pack_lot_lines.map((lot) => {
-                        return { lot_name: lot.lot_name };
-                    })
+                          return { lot_name: lot.lot_name };
+                      })
                     : false,
             },
             destinationOrderUid: false,
@@ -699,7 +642,7 @@ export class TicketScreen extends Component {
                 modelField: "pos_reference",
             },
             DATE: {
-                repr: (order) => formatDateTime(order.date_order),
+                repr: (order) => order.date_order.toFormat("yyyy-MM-dd HH:mm a"),
                 displayName: _t("Date"),
                 modelField: "date_order",
             },
